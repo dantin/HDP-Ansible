@@ -1,0 +1,49 @@
+---
+
+- name: create downloads directory
+  file: path="{{ item }}" state=directory mode=0755
+  with_items:
+    - "{{ downloads_dir }}"
+    - "{{ resources_dir }}"
+    - "{{ resources_dir }}/bin"
+
+# preflight checks
+- name: detect outboud network
+  shell: >
+    warn=no
+    curl -s --connect-timeout 10 www.baidu.com 2>/dev/null >/dev/null; echo $?
+  changed_when: false
+  register: outboud_network_st
+
+- name: set outboud network fact
+  set_fact: has_outbound_network={{ outboud_network_st.stdout.strip() == '0' }}
+
+- fail:
+    msg: "The Control Machine must have access to the Internet in order to download related packages."
+  when: not has_outbound_network
+
+- name: download JDK binaries
+  get_url:
+    url: "{{ oraclejdk_options.remote_jdk_repository }}/{{ item }}"
+    dest: "{{ downloads_dir }}/{{ item }}"
+    force: no
+    validate_certs: no
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: 4
+  delay: "{{ 5 | random + 3 }}"
+  with_items:
+    - "jdk-8u181-linux-x64.tar.gz"
+    - "jce_policy-8.zip"
+  when: has_outbound_network
+
+- name: cp JDK binaries
+  shell: >
+    cp -v "{{ downloads_dir }}/{{ item }}" "{{ resources_dir }}/bin/{{ item }}"
+  with_items:
+    - "jdk-8u181-linux-x64.tar.gz"
+    - "jce_policy-8.zip"
+
+- name: clean up downloads dir
+  shell: >
+    cd "{{ downloads_dir }}" && find . -mindepth 1 -maxdepth 1 -type f -exec rm -rf {} \;

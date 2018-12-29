@@ -1,0 +1,17 @@
+---
+# tasks for Oracle JDK
+
+- name: Set hostname
+  hostname: name={{ inventory_hostname_short }}
+
+- name: create deploy directory
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - "/home/{{ ansible_user }}/oraclejdk"
+
+- name: deploy oraclejdk binaries
+  copy: src="{{ resources_dir }}/bin/{{ item }}" dest="/home/{{ ansible_user }}/oraclejdk/{{ item }}" mode=0644
+  become: yes
+  with_items:
+    - "{{ oraclejdk_options.jce_location }}"
+    - "{{ oraclejdk_options.tarball_location }}"
