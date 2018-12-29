@@ -1,0 +1,11 @@
+---
+- import_playbook: "set_variables.yml"
+  tags: always
+
+- name: Deploy Ambari & Hortonworks HDP Local Repository
+  hosts: local-repo
+  any_errors_fatal: true
+  become: yes
+  roles:
+    - cluster-repo
+  tags: cluster-repo

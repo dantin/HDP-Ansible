@@ -19,3 +19,6 @@ slave01  ansible_host=172.19.76.91 ansible_user=dantin ansible_ssh_private_key_f
 slave02  ansible_host=172.19.76.92  ansible_user=dantin ansible_ssh_private_key_file="~/.ssh/id_rsa"
 slave03  ansible_host=172.19.76.93  ansible_user=dantin ansible_ssh_private_key_file="~/.ssh/id_rsa"
 # slave04  ansible_host=120.55.43.195  ansible_user=root ansible_ssh_private_key_file="~/.ssh/id_rsa" rack=/default-rack
+
+[local-repo]
+slave01 ansible_host=172.19.76.91 ansible_user=dantin ansible_ssh_private_key_file="~/.ssh/id_rsa"

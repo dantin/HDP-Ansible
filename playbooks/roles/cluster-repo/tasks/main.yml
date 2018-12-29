@@ -1,0 +1,37 @@
+---
+# tasks for cluster repo
+
+- name: Install Nginx
+  package:
+    name: "nginx"
+    update_cache: yes
+    state: present
+
+- name: Create repository directory
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - "/var/www/ambari"
+
+- name: Deploy Hortonworks binaries
+  copy: src="{{ resources_dir }}/hortonworks/{{ item }}" dest="/var/www/ambari" mode=0644
+  with_items:
+    - "ambari-2.7.3.0-centos7.tar.gz"
+    - "HDP-3.1.0.0-centos7-rpm.tar.gz"
+    - "HDP-GPL-3.1.0.0-centos7-gpl.tar.gz"
+    - "HDP-UTILS-1.1.0.22-centos7.tar.gz"
+
+- name: Unarchive Hortonworks binaries
+  shell: tar xzf {{ item }}
+  args:
+    chdir: "/var/www/ambari"
+    warn: no
+  with_items:
+    - "ambari-2.7.3.0-centos7.tar.gz"
+    - "HDP-3.1.0.0-centos7-rpm.tar.gz"
+    - "HDP-GPL-3.1.0.0-centos7-gpl.tar.gz"
+    - "HDP-UTILS-1.1.0.22-centos7.tar.gz"
+
+- name: Clean up binaries
+  shell: find . -mindepth 1 -maxdepth 1 -type f -name "*.tar.gz" -exec rm -f {} \;
+  args:
+    chdir: "/var/www/ambari"
