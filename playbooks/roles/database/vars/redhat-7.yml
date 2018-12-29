@@ -1,0 +1,9 @@
+---
+mysql_version: 5.6
+mysql_repo_url: "http://repo.mysql.com/yum/mysql-{{ mysql_version }}-community/el/7/$basearch/"
+mysql_repo_key: http://repo.mysql.com/RPM-GPG-KEY-mysql
+mysql_packages:
+  - mysql-community-server
+  - MySQL-python
+mysql_service_name: mysql
+mysql_config_file: /etc/my.cnf

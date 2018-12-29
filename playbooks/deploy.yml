@@ -1,0 +1,11 @@
+---
+- import_playbook: "set_variables.yml"
+  tags: always
+
+- name: Deploy JDK binaries to hadoop-cluster group
+  hosts: hadoop-cluster
+  any_errors_fatal: true
+  become: yes
+  roles:
+    - jdk
+  tags: jdk
